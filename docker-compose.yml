@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+    indexing-service:
+        image: leanda/indexing:${TAG_VERSION-latest}
+        build:
+            context: .
+            dockerfile: Sds.Indexing/Dockerfile
+        environment:
+        - OSDR_LOG_FOLDER=/logs
+        - OSDR_MONGO_DB=mongodb://mongo:27017/osdr
+        - OSDR_RABBIT_MQ=rabbitmq://guest:guest@rabbitmq:5672/osdr_dev
+        - OSDR_ES=http://elasticsearch:9200
+        volumes:
+        - ${OSDR_LOG_FOLDER}:/logs
+        networks:
+        - leanda-ext
+        ports:
+        - "11090:11090"
+            
+networks:
+    leanda-ext:
+        external:
+            name: leanda-ext
