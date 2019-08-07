@@ -50,7 +50,9 @@ namespace Sds.Osdr.Indexing
                                     .Properties(p => p.Keyword(k => k.Name("FileId")))
                                     .Properties(p => p.Object<dynamic>(f => f.Name("Properties")
                                         .Properties(np => np.Object<dynamic>(t => t.Name("ChemicalProperties")
-                                            .Properties(cp => cp.Text(tp => tp.Name("Value")))))))));
+                                            .Properties(cp => cp.Text(tp => tp.Name("Value")))))))
+                                            
+                                            ));
                         break;
 
                     default:
@@ -58,8 +60,11 @@ namespace Sds.Osdr.Indexing
                             .Mappings(s => s
                                 .Map(typeName, tm => tm
                                     .Properties(p => p
-                                        .Keyword(k => k.Name("OwnedBy"))
-                                        )));
+                                        .Keyword(k => k.Name("OwnedBy")))
+                                    .Properties(p => p.Object<dynamic>(f => f.Name("Properties")
+                                        .Properties(np => np.Object<dynamic>(t => t.Name("BioMetadata")
+                                            .Properties(cp => cp.Text(tp => tp.Name("Value")))
+                                            .Properties(cp => cp.Text(tp => tp.Name("Name")))))))));
                         break;
                 }
 
@@ -148,7 +153,14 @@ namespace Sds.Osdr.Indexing
             services.AddSingleton(context => Bus.Factory.CreateUsingRabbitMq(x =>
             {
                 var mtSettings = Container.GetService<IOptions<MassTransitSettings>>().Value;
-                IRabbitMqHost host = x.Host(new Uri(Environment.ExpandEnvironmentVariables(mtSettings.ConnectionString)), h => { });
+                IRabbitMqHost host = x.Host(
+                    new Uri(
+                            //    Environment.ExpandEnvironmentVariables(
+                            "rabbitmq://guest:guest@localhost:5672/osdr_dev" //mtSettings.ConnectionString
+
+                            ), 
+                            h => { }
+                            );
 
                 x.UseSerilog();
 
