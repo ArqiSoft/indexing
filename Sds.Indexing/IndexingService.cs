@@ -153,14 +153,7 @@ namespace Sds.Osdr.Indexing
             services.AddSingleton(context => Bus.Factory.CreateUsingRabbitMq(x =>
             {
                 var mtSettings = Container.GetService<IOptions<MassTransitSettings>>().Value;
-                IRabbitMqHost host = x.Host(
-                    new Uri(
-                            //    Environment.ExpandEnvironmentVariables(
-                            "rabbitmq://guest:guest@localhost:5672/osdr_dev" //mtSettings.ConnectionString
-
-                            ), 
-                            h => { }
-                            );
+                IRabbitMqHost host = x.Host(new Uri(Environment.ExpandEnvironmentVariables(mtSettings.ConnectionString)), h => { });
 
                 x.UseSerilog();
 
