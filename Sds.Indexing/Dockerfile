@@ -7,9 +7,9 @@ WORKDIR /build
 
 COPY . .
 
-RUN dotnet restore Sds.Indexing/Sds.Indexing.csproj
+RUN dotnet restore Sds.Indexing.csproj
 
-RUN dotnet publish Sds.Indexing/Sds.Indexing.csproj -r $RID -o /dist
+RUN dotnet publish Sds.Indexing.csproj -r $RID -o /dist
 
 # RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 # RUN apt-get install -y libunwind8
