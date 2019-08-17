@@ -138,15 +138,13 @@ namespace Sds.Osdr.Indexing
                 .DefaultFieldNameInferrer(f => f); 
             services.AddSingleton<IElasticClient>(new ElasticClient(settings));
             
-            var mongoDBConnectionString = Environment.ExpandEnvironmentVariables(Configuration["OsdrConnectionSettings:ConnectionString"]);
-            services.AddSingleton(new MongoClient(mongoDBConnectionString));
-            var database = Configuration["OsdrConnectionSettings:DatabaseName"];
+            var mongoConnectionString = Environment.ExpandEnvironmentVariables(Configuration["OsdrConnectionSettings:ConnectionString"]);
+            var mongoUrl = new MongoUrl(mongoConnectionString);
 
-            services.AddTransient<IBlobStorage, GridFsStorage>(
-                x => new GridFsStorage(mongoDBConnectionString, Configuration["OsdrConnectionSettings:DatabaseName"]));
-
-            Log.Information($"Using to MongoDB database {database}");
-            services.AddScoped(service => service.GetService<MongoClient>().GetDatabase(database));
+            Log.Information($"Connecting to MongoDB {mongoConnectionString}");
+            services.AddSingleton(new MongoClient(mongoUrl));
+            services.AddScoped(service => service.GetService<MongoClient>().GetDatabase(mongoUrl.DatabaseName));
+            services.AddTransient<IBlobStorage, GridFsStorage>(service => new GridFsStorage(service.GetService<IMongoDatabase>()));
 
             services.AddAllConsumers();
 
