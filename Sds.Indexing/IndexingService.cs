@@ -173,7 +173,7 @@ namespace Sds.Osdr.Indexing
             Container = services.BuildServiceProvider();
 
             var elasticClient = Container.GetRequiredService<IElasticClient>();
-
+            Log.Information($"Connection to Elasticsearch server: {elasticConnectionString}");
             try
             {
                 new[]
